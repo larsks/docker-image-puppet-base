@@ -1,0 +1,9 @@
+---
+:backends:
+  - yaml
+:hierarchy:
+  - defaults
+  - local
+
+:yaml:
+  :datadir: /var/lib/hiera
