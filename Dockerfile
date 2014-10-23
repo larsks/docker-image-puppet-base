@@ -19,6 +19,8 @@ RUN yum install -y \
 	git \
 	; yum clean all
 
+RUN puppet module install puppetlabs-stdlib
+
 # Install dummy service provider
 COPY dummy_service /usr/share/puppet/modules/dummy_service
 
