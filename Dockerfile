@@ -14,19 +14,20 @@ RUN yum update -y; yum clean all
 # Install base packages
 RUN yum install -y \
 	puppet \
+	augeas \
 	hiera \
 	git \
-	openstack-puppet-modules \
 	; yum clean all
-
-COPY hiera.yaml /etc/puppet/hiera.yaml
 
 # Install dummy service provider
 COPY dummy_service /usr/share/puppet/modules/dummy_service
 
-# Replace mysql module in openstack-puppet-modules with
-# a more recent version.
-RUN rm -rf /usr/share/openstack-puppet/modules/mysql
-RUN git clone https://github.com/puppetlabs/puppetlabs-mysql.git \
-	/usr/share/openstack-puppet/modules/mysql
+RUN git clone https://github.com/garethr/hiera-etcd.git \
+	/usr/share/puppet/modules/hiera-etcd
+RUN gem install etcd
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+COPY hiera.yaml /etc/puppet/hiera.yaml.in
+COPY entrypoint.sh /entrypoint.sh
 

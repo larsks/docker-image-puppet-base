@@ -1,9 +1,17 @@
 ---
 :backends:
   - yaml
+  - etcd
+
 :hierarchy:
-  - defaults
-  - local
+  - default
+@HIERARCHY@
 
 :yaml:
   :datadir: /var/lib/hiera
+
+:http:
+  :host: @ETCD_HOST@
+  :port: @ETCD_PORT@
+  :paths:
+@PATHLIST@
