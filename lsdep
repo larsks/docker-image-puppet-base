@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Produce a dependency-ordered listing of a set of directories.
+# Directories may specify requirements by listing the names of other
+# directories in a "requires" or "required_by" file.
+
+reqs=$(mktemp -t reqXXXXXX)
+trap "rm -f $reqs" EXIT
+
+for dir in "$@"; do
+	[ -d "$dir" ] || continue
+	echo "$dir $dir" >> $reqs
+	sed "s/^/$dir /" $dir/required_by >> $reqs 2>/dev/null
+	sed "s/$/ $dir/" $dir/requires >> $reqs 2>/dev/null
+done
+
+tsort $reqs
+

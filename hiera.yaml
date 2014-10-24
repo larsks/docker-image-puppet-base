@@ -5,14 +5,15 @@
 
 :hierarchy:
   - default
-@HIERARCHY@
 
 :yaml:
   :datadir: /var/lib/hiera
+@HIERARCHY@
 
 :http:
   :host: @ETCD_HOST@
   :port: @ETCD_PORT@
   :paths:
-    - /puppet/defaults
+    - /puppet
 @PATHLIST@
+

@@ -20,6 +20,7 @@ RUN yum install -y \
 	; yum clean all
 
 RUN puppet module install puppetlabs-stdlib
+RUN puppet module install puppetlabs-concat
 
 # Install dummy service provider
 COPY dummy_service /usr/share/puppet/modules/dummy_service
@@ -32,4 +33,8 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 COPY hiera.yaml /etc/puppet/hiera.yaml.in
 COPY entrypoint.sh /entrypoint.sh
+COPY docker-puppet /usr/bin/docker-puppet
 
+RUN mkdir /puppet
+COPY puppet /puppet/base
+COPY lsdep /usr/bin/lsdep

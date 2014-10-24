@@ -40,5 +40,7 @@ if [ ! -f /etc/puppet/hiera.yaml ]; then
 	' /etc/puppet/hiera.yaml.in > /etc/puppet/hiera.yaml
 fi
 
+/usr/bin/docker-puppet
+
 exec "$@"
 

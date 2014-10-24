@@ -1,0 +1,34 @@
+#!/bin/sh
+
+: ${PUPPET_MANIFEST:=node.pp}
+: ${PUPPET_ENVIRONMENT:=production}
+: ${PUPPET_MODULEPATH:=$(puppet config print modulepath --environment $PUPPET_ENVIRONMENT)}
+
+puppet_apply_library () {
+	local lib=$1
+
+	[ -d "$lib" ] || return
+
+	(
+	echo "*** running puppet library: $lib"
+	cd $lib
+
+	[ -f env ] && . ./env
+
+	puppet apply --verbose --detailed-exitcodes \
+		--environment $PUPPET_ENVIRONMENT \
+		--modulepath $PUPPET_MODULEPATH:$PWD/modules \
+		$PUPPET_MANIFEST
+	)
+}
+
+if [ "${PUPPET_USE_HOSTNAME:-n}" != y ]; then
+	export FACTER_fqdn=localhost
+fi
+
+echo "*** start running puppet libraries"
+cd /puppet
+for lib in $(lsdep *); do
+	puppet_apply_library $lib
+done
+echo "*** finished running puppet libraries"
