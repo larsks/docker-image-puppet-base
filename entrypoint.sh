@@ -7,6 +7,7 @@
 # not overwrite it.
 if [ ! -f /etc/puppet/hiera.yaml ]; then
 	> /tmp/hiera-paths
+	> /tmp/hierarchy
 
 	i=0
 	while :; do
@@ -16,6 +17,10 @@ if [ ! -f /etc/puppet/hiera.yaml ]; then
 		echo "  - ${!pathvar}" >> /tmp/hierarchy
 	done
 
+	if [ "$i" -eq 0 ]; then
+		echo "  - default" >> /tmp/hierarchy
+	fi
+
 	i=0
 	while :; do
 		pathvar="PUPPET_HIERA_PATH_$i"
@@ -23,6 +28,10 @@ if [ ! -f /etc/puppet/hiera.yaml ]; then
 		let i++
 		echo "    - ${!pathvar}" >> /tmp/hiera-paths
 	done
+
+	if [ "$i" -eq 0 ]; then
+		echo "    - /puppet" >> /tmp/hiera-paths
+	fi
 
 	sed '
 	s/@ETCD_HOST@/'"$ETCD_PORT_4001_TCP_ADDR"'/g
