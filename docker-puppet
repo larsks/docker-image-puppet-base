@@ -6,6 +6,7 @@
 
 puppet_apply_library () {
 	local lib=$1
+	local version
 
 	[ -d "$lib" ] || return
 
@@ -13,9 +14,11 @@ puppet_apply_library () {
 	echo "*** running puppet library: $lib"
 	cd $lib
 
+	[ -f version ] && version=$(cat version)
 	[ -f env ] && . ./env
 
-	puppet apply --verbose --detailed-exitcodes \
+	puppet apply --verbose \
+		${version:+--config_version="echo $version"} \
 		--environment $PUPPET_ENVIRONMENT \
 		--modulepath $PUPPET_MODULEPATH:$PWD/modules \
 		$PUPPET_MANIFEST
@@ -26,9 +29,12 @@ if [ "${PUPPET_USE_HOSTNAME:-n}" != y ]; then
 	export FACTER_fqdn=localhost
 fi
 
+# ensure we don't leave a populated yum cache hanging around.
+trap "yum clean all" EXIT
+
 echo "*** start running puppet libraries"
 cd /puppet
 for lib in $(lsdep *); do
-	puppet_apply_library $lib
+	puppet_apply_library $lib || exit 1
 done
 echo "*** finished running puppet libraries"
